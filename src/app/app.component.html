@@ -1,8 +1,7 @@
 
-<!--<ng-container>-->
+<ng-container *ngIf="(usersState$ | async) as state" [ngSwitch]="state.appState">
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    {{ usersState$ | async | json }}
 
     <div class="container">
 
@@ -31,6 +30,8 @@
 
   </nav>
 
+
+
   <div class="container">
     <div style="color: #0773d0;position: fixed;
               top: 60px;
@@ -41,18 +42,19 @@
 
     <div class="row">
       <div class="col-md-12 mt-3">
-<!--        <ng-container *ngSwitchCase="'APP_ERROR'"></ng-container>-->
 
-<!--        <ng-container *ngSwitchCase="'APP_LOADING'">-->
+        <ng-container *ngSwitchCase="'APP_ERROR'"> {{ state.error | json }} </ng-container>
+
+        <ng-container *ngSwitchCase="'APP_LOADING'">
           <div class="d-flex justify-content-center mt-4">
             <div class="spinner-border" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-<!--        </ng-container>-->
+        </ng-container>
 
-<!--        <ng-container>-->
-          <h3>User List</h3>
+        <ng-container *ngSwitchCase="'APP_LOADED'">
+          <h3>Current Clients</h3>
           <table class="table table-striped">
             <thead>
             <tr>
@@ -66,22 +68,27 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <th scope="row">id</th>
-              <td>image</td>
-              <td>name</td>
-              <td>email</td>
-              <td>phone</td>
+            <tr *ngFor="let user of state.appData.data.page.content; let i=index">
+              <th scope="row">{{ user.id}}</th>
               <td>
-                    <span class="badge">
+                <img [src]="user.image_url" width="38" height="32" class="rounded-circle"
+                       [alt]="user.name + '\'s photo'"></td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phone }}</td>
+              <td>
+                    <span class="badge" [ngClass]="[user.status === 'ACTIVE' ? ' bg-success': '',
+                                                    user.status === 'INACTIVE' ? ' bg-info': '',
+                                                    user.status === 'BANNED' ? ' bg-danger': '']">
+                      {{ user.status}}
                     </span>
               </td>
-              <td>dummy data</td>
+              <td> {{ user.address }}</td>
             </tr>
             </tbody>
           </table>
           <div class="alert alert-secondary" role="alert">
-            No users found
+            No clients found
           </div>
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-end">
@@ -100,9 +107,9 @@
               </li>
             </ul>
           </nav>
-<!--        </ng-container>-->
+        </ng-container>
 
       </div>
     </div>
   </div>
-<!--  </ng-container>-->
+  </ng-container>
