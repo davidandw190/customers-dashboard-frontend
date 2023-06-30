@@ -31,7 +31,6 @@
   </nav>
 
 
-
   <div class="container">
     <div style="color: #0773d0;position: fixed;
               top: 60px;
@@ -92,21 +91,27 @@
 
           <nav aria-label="Page navigation">
             <ul class="pagination justify-content-end">
-              <li class="page-item pointer">
-                <a class="page-link" aria-label="Previous">
+
+              <li class="page-item pointer" [ngClass]="0 == (currentPage$ | async)  ? ' disabled' : ''">
+                <a (click)="goToNextPrev('backward', '')"  class="page-link" aria-label="Previous">
                   <span aria-hidden="true">&laquo; Previous</span>
                 </a>
               </li>
 
-              <li *ngFor="let pageNumber of [].constructor(state.appData.data.page.totalPages); let i=index" class="page-item pointer" >
-                <a (click)="goToPage('', i)" class="page-link"> </a>
-                {{ i + 1}}
+              <li *ngFor="let pageNumber of [].constructor(state.appData.data.page.totalPages); let i=index"
+                  class="page-item pointer" [ngClass]="i == (currentPage$ | async) ? ' active' : ''">
+                <a (click)="goToPage('', i)" class="page-link">
+                  {{ i + 1}}
+                </a>
               </li>
-              <li class="page-item pointer" >
+
+              <li (click)="goToNextPrev('forward', '')" class="page-item pointer"
+                  [ngClass]="(state.appData.data.page.totalPages -1) == (currentPage$ | async)  ? ' disabled' : ''">
                 <a class="page-link" aria-label="Next">
                   <span aria-hidden="true">Next &raquo;</span>
                 </a>
               </li>
+
             </ul>
           </nav>
         </ng-container>

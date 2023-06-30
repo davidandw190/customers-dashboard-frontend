@@ -13,8 +13,14 @@ import {error} from "@angular/compiler-cli/src/transformers/util";
 })
 export class AppComponent {
   title = 'customers-dash-app';
-  usersState$: Observable<{ appState: string, appData?: ApiResponse<Page>, error?: HttpErrorResponse }> | undefined
+  usersState$: Observable<{
+    appState: string,
+    appData?: ApiResponse<Page>,
+    error?: HttpErrorResponse }> | undefined
+
   responseSubject = new BehaviorSubject<ApiResponse<Page>>(null);
+  private currentPageSubject = new BehaviorSubject<number>(0) ;
+  currentPage$ = this.currentPageSubject.asObservable();
 
   constructor(private userService: UserService) { }
 
@@ -22,6 +28,7 @@ export class AppComponent {
     this.usersState$ = this.userService.users$().pipe(
       map((response: ApiResponse<Page>) => {
         this.responseSubject.next(response);
+        this.currentPageSubject.next(response.data.page.number);
         console.log(response);
         return ({
           appState: 'APP_LOADED',
@@ -37,8 +44,12 @@ export class AppComponent {
     this.usersState$ = this.userService.users$(name, pageNumber).pipe(
       map((response: ApiResponse<Page>) => {
         this.responseSubject.next(response);
+        this.currentPageSubject.next(pageNumber);
         console.log(response);
-        return ({appState: 'APP_LOADED', appData: response});
+        return ({
+          appState: 'APP_LOADED',
+          appData: response
+        });
       }),
       startWith({
         appState: 'APP_LOADED',
@@ -47,4 +58,13 @@ export class AppComponent {
       catchError((error: HttpErrorResponse) => of({appState: 'APP_ERROR', error}))
     )
   }
+
+  goToNextPrev(direction?: string, name?: string): void {
+    this.goToPage(name, direction === 'forward'
+                      ? this.currentPageSubject.value + 1
+                      : this.currentPageSubject.value - 1
+    );
+  }
 }
+
+
