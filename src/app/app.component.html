@@ -19,8 +19,8 @@
           </li>
         </ul>
 
-        <form class="d-flex" role="search">
-          <input type="search" name="name" class="form-control me-2" placeholder="Search users" aria-label="Search">
+        <form #searchForm="ngForm" (ngSubmit)="goToPage(searchForm.value.name)" class="d-flex" role="search">
+          <input type="search" name="name" ngModel class="form-control me-2" placeholder="Search users" aria-label="Search">
           <button class="btn btn-success" type="submit">Search</button>
         </form>
 
@@ -93,19 +93,19 @@
             <ul class="pagination justify-content-end">
 
               <li class="page-item pointer" [ngClass]="0 == (currentPage$ | async)  ? ' disabled' : ''">
-                <a (click)="goToNextPrev('backward', '')"  class="page-link" aria-label="Previous">
+                <a (click)="goToNextPrev('backward', searchForm.value.name)"  class="page-link" aria-label="Previous">
                   <span aria-hidden="true">&laquo; Previous</span>
                 </a>
               </li>
 
               <li *ngFor="let pageNumber of [].constructor(state.appData.data.page.totalPages); let i=index"
                   class="page-item pointer" [ngClass]="i == (currentPage$ | async) ? ' active' : ''">
-                <a (click)="goToPage('', i)" class="page-link">
+                <a (click)="goToPage(searchForm.value.name, i)" class="page-link">
                   {{ i + 1}}
                 </a>
               </li>
 
-              <li (click)="goToNextPrev('forward', '')" class="page-item pointer"
+              <li (click)="goToNextPrev('forward', searchForm.value.name)" class="page-item pointer"
                   [ngClass]="(state.appData.data.page.totalPages -1) == (currentPage$ | async)  ? ' disabled' : ''">
                 <a class="page-link" aria-label="Next">
                   <span aria-hidden="true">Next &raquo;</span>
